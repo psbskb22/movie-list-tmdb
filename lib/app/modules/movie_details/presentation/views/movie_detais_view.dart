@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -124,10 +125,25 @@ class MovieDetailsWidget extends StatelessWidget {
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            "https://image.tmdb.org/t/p/w200${movie.posterPath}",
-                            fit: BoxFit.cover,
+                          child: CachedNetworkImage(
                             height: 100,
+                            imageUrl:
+                                "https://image.tmdb.org/t/p/w200${movie.posterPath}",
+                            errorWidget: (context, error, stackTrace) {
+                              return Container(
+                                color: Theme.of(context).colorScheme.tertiary,
+                                child: Icon(
+                                  Icons.hide_image_rounded,
+                                  size: 50,
+                                ),
+                              );
+                            },
+                            placeholder: (context, child) {
+                              return Container(
+                                color: Theme.of(context).colorScheme.tertiary,
+                              );
+                            },
+                            fit: BoxFit.fitWidth,
                           ),
                         ),
                         Expanded(

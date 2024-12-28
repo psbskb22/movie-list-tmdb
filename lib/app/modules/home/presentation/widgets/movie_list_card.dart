@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -37,12 +38,19 @@ class MoiveListCard extends StatelessWidget {
                     aspectRatio: 0.95,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        "https://image.tmdb.org/t/p/w200${movie.posterPath}",
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) {
-                            return child;
-                          }
+                      child: CachedNetworkImage(
+                        imageUrl:
+                            "https://image.tmdb.org/t/p/w200${movie.posterPath}",
+                        errorWidget: (context, error, stackTrace) {
+                          return Container(
+                            color: Theme.of(context).colorScheme.tertiary,
+                            child: Icon(
+                              Icons.hide_image_rounded,
+                              size: 50,
+                            ),
+                          );
+                        },
+                        placeholder: (context, child) {
                           return Container(
                             color: Theme.of(context).colorScheme.tertiary,
                           );
