@@ -98,9 +98,11 @@ class MovieDetailsWidget extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                LikeButtonWidget(
-                                  movie: movie,
-                                  iconSize: 30,
+                                IgnorePointer(
+                                  child: LikeButtonWidget(
+                                    movie: movie,
+                                    iconSize: 30,
+                                  ),
                                 ),
                               ],
                             ),
