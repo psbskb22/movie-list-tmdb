@@ -32,4 +32,23 @@ class MovieListRepositoryImpl extends MovieListRepository {
       }
     }
   }
+
+  @override
+  Future<bool> getMovieLikeData(String movieId) async {
+    try {
+      return await movieListLocalDatasource.getMovieLikeData(movieId);
+    } catch (e) {
+      return false;
+    }
+  }
+
+  @override
+  Future<bool> cacheMovieLikeData(String movieId, bool isLiked) async {
+    try {
+      return await movieListLocalDatasource.cacheMoviveLikeData(
+          movieId, isLiked);
+    } catch (e) {
+      return false;
+    }
+  }
 }

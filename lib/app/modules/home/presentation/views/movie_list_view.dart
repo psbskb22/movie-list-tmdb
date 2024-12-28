@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:movie_list_tmdb/app/core/state/api_state.dart';
 import 'package:movie_list_tmdb/app/modules/home/domain/entities/movie.dart';
+import 'package:movie_list_tmdb/app/modules/home/presentation/cubits/like_movie_cubit.dart';
 import 'package:movie_list_tmdb/app/modules/home/presentation/cubits/movie_list_cubit.dart';
 
-import '../widgets/like_animated_icon_widget.dart';
+import '../widgets/movie_like_widget.dart';
+
+TextEditingController searchTextEditingController = TextEditingController();
 
 class MovieListView extends StatelessWidget {
   const MovieListView({super.key});
@@ -15,8 +19,15 @@ class MovieListView extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Movie List'),
       ),
-      body: BlocProvider(
-        create: (context) => MovieListCubit()..getMovieList(),
+      body: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => MovieListCubit()..getMovieList(),
+          ),
+          BlocProvider(
+            create: (context) => LikeMovieCubit(),
+          ),
+        ],
         child: SafeArea(child: MovieList()),
       ),
     );
@@ -35,6 +46,7 @@ class MovieList extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: TextField(
+            controller: searchTextEditingController,
             onChanged: (value) {
               if (value.isEmpty) {
                 context.read<MovieListCubit>().getMovieList();
@@ -52,24 +64,30 @@ class MovieList extends StatelessWidget {
         ),
         Expanded(child: BlocBuilder<MovieListCubit, ApiState>(
           builder: (context, state) {
-            if (state is ApiLoadingDataState) {
+            if (state is ApiDataState) {
               List<Movie> movieList = state.data;
+              bool isLoading = state.isLoading;
               return Column(
                 children: [
                   Expanded(child: MovieListWidget(movieList: movieList)),
-                  const Center(child: CircularProgressIndicator()),
+                  if (isLoading)
+                    Center(
+                        child: LoadingAnimationWidget.staggeredDotsWave(
+                      color: Theme.of(context).colorScheme.primary,
+                      size: 50,
+                    )),
                 ],
               );
-            }
-            if (state is ApiDataState) {
-              List<Movie> movieList = state.data;
-              return MovieListWidget(movieList: movieList);
             } else if (state is ApiErrorState) {
               return Center(child: Text(state.errorMessage));
             } else if (state is ApiDataState) {
               return Center(child: Text(state.data));
             }
-            return const Center(child: CircularProgressIndicator());
+            return Center(
+                child: LoadingAnimationWidget.threeArchedCircle(
+              color: Theme.of(context).colorScheme.primary,
+              size: 50,
+            ));
           },
         )),
       ],
@@ -97,6 +115,7 @@ class _MovieListWidgetState extends State<MovieListWidget> {
       if (scrollController.position.pixels ==
           scrollController.position.maxScrollExtent) {
         context.read<MovieListCubit>().getMovieList(pagination: true);
+        searchTextEditingController.clear();
       }
     });
     super.initState();
@@ -116,55 +135,68 @@ class _MovieListWidgetState extends State<MovieListWidget> {
           ),
           itemCount: widget.movieList.length,
           itemBuilder: (context, index) {
-            return Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondary,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
-                children: [
-                  Center(
-                    child: Column(
-                      children: [
-                        AspectRatio(
-                          aspectRatio: 0.95,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.network(
-                              "https://image.tmdb.org/t/p/w200${widget.movieList[index].posterPath}",
-                              fit: BoxFit.fitWidth,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(4),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            widget.movieList[index].title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelLarge!
-                                .copyWith(color: Colors.white),
-                          ),
-                        ),
-                        LikeAnimatedIconWidget(),
-                        // Icon(Icons.favorite_outline_sharp),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
+            return MoiveListCard(movie: widget.movieList[index]);
           }),
+    );
+  }
+}
+
+class MoiveListCard extends StatelessWidget {
+  const MoiveListCard({
+    super.key,
+    required this.movie,
+  });
+
+  final Movie movie;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.secondary,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        children: [
+          Center(
+            child: Column(
+              children: [
+                AspectRatio(
+                  aspectRatio: 0.95,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      "https://image.tmdb.org/t/p/w200${movie.posterPath}",
+                      fit: BoxFit.fitWidth,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    movie.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context)
+                        .textTheme
+                        .labelLarge!
+                        .copyWith(color: Colors.white),
+                  ),
+                ),
+                LikeButtonWidget(movieId: movie.id),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

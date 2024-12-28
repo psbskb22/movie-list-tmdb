@@ -20,13 +20,22 @@ class MovieListCubit extends Cubit<ApiState> {
   List<Movie> movieList = [];
 
   void getMovieList({bool pagination = false, String? searchKeyword}) async {
-    if (pagination == true) _pageNumber++;
-    if (searchKeyword != null) _searchKeyword = searchKeyword;
+    if (pagination == true) {
+      _pageNumber++;
+      _searchKeyword = null;
+    }
+    if (searchKeyword != null) {
+      _searchKeyword = searchKeyword;
+      List<Movie> serachMovieList = _searchMovie(_searchKeyword!);
+      emit(ApiDataState(data: serachMovieList, isLoading: false));
+      return;
+    }
     if (movieList.isEmpty) {
       emit(ApiLoadingState());
     } else {
-      emit(ApiLoadingDataState(data: movieList));
+      emit(ApiDataState(data: movieList, isLoading: true));
     }
+
     MovieListRepository movieListRepository = MovieListRepositoryImpl(
       movieListRemoteDatasource:
           MovieListRemoteDatasourceImpl(apiClient: APIClient()),
@@ -44,12 +53,7 @@ class MovieListCubit extends Cubit<ApiState> {
       } else {
         movieList = r;
       }
-      if (_searchKeyword != null) {
-        List<Movie> serachMovieList = _searchMovie(_searchKeyword!);
-        emit(ApiDataState(data: serachMovieList));
-      } else {
-        emit(ApiDataState(data: movieList));
-      }
+      emit(ApiDataState(data: movieList, isLoading: false));
     });
   }
 

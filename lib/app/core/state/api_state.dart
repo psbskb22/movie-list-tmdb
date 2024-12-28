@@ -10,14 +10,9 @@ class ApiErrorState extends ApiState {
   ApiErrorState({required this.errorMessage});
 }
 
-class ApiLoadingDataState<T> extends ApiState {
-  final T data;
-
-  ApiLoadingDataState({required this.data});
-}
-
 class ApiDataState<T> extends ApiState {
   final T data;
+  final bool isLoading;
 
-  ApiDataState({required this.data});
+  ApiDataState({required this.data, required this.isLoading});
 }
