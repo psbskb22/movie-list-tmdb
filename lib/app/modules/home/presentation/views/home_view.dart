@@ -16,7 +16,7 @@ class HomeView extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => MovieListCubit()..getMovieList(),
+          create: (context) => MovieListCubit()..getMovieList(pageNumber: 1),
         ),
         BlocProvider(
           create: (context) => FavoriteMovieListCubit(),
@@ -45,7 +45,7 @@ class MovieList extends StatelessWidget {
             onSelect: (index) {
               context.read<MovieListTypeSelectionCubit>().select(index);
               if (index == 0) {
-                context.read<MovieListCubit>().getMovieList();
+                context.read<MovieListCubit>().getMovieList(pageNumber: 1);
               } else {
                 context.read<FavoriteMovieListCubit>().getFavoriteMovieList();
               }

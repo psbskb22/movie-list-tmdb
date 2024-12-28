@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:movie_list_tmdb/app/modules/home/presentation/cubits/movie_list_cubit.dart';
 
 class MovieListErrorWidget extends StatelessWidget {
   final String errorMessage;
@@ -20,7 +22,9 @@ class MovieListErrorWidget extends StatelessWidget {
         ),
         Text(errorMessage),
         MaterialButton(
-          onPressed: () {},
+          onPressed: () {
+            context.read<MovieListCubit>().getMovieList(pageNumber: 1);
+          },
           minWidth: 200,
           color: Theme.of(context).colorScheme.primary,
           shape: RoundedRectangleBorder(

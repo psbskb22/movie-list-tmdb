@@ -21,7 +21,7 @@ class LikedMovieCubit extends Cubit<Movie?> {
     GetLikedMovieDataUsecase getMovieLikeDataUsecase =
         GetLikedMovieDataUsecase(movieListRepository: movieListRepository);
     List<Movie> movies = await getMovieLikeDataUsecase.call(movieId);
-    emit(movies.firstOrNull);
+    if (!isClosed) emit(movies.firstOrNull);
   }
 
   like(Movie movie) {

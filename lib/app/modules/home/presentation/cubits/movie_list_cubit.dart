@@ -26,7 +26,11 @@ class MovieListCubit extends Cubit<ApiState> {
     movieListLocalDatasource: MovieListLocalDatasourceImpl(),
   );
 
-  void getMovieList({bool pagination = false, String? searchKeyword}) async {
+  void getMovieList(
+      {bool pagination = false, int? pageNumber, String? searchKeyword}) async {
+    if (pageNumber != null) {
+      _pageNumber = pageNumber;
+    }
     if (pagination == true) {
       _pageNumber++;
       _searchKeyword = null;
