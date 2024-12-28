@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:movie_list_tmdb/app/core/data_injection/getit_data_injection.dart';
 import 'package:movie_list_tmdb/app/router/app_routers.dart';
 
 void main() {
+  GetItDataInjection.setup();
   runApp(const MyApp());
 }
 

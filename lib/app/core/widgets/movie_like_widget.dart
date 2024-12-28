@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:movie_list_tmdb/app/api_client/api_client.dart';
 
-import '../../data/datasources/movie_list_local_datasource.dart';
-import '../../data/datasources/movie_list_remote_datasource.dart';
-import '../../data/repositories/movie_list_repository_impl.dart';
-import '../../domain/repositories/movie_list_repository.dart';
-import '../../domain/usecases/get_movie_like_data_usecase.dart';
+import '../../modules/home/data/datasources/movie_list_local_datasource.dart';
+import '../../modules/home/data/datasources/movie_list_remote_datasource.dart';
+import '../../modules/home/data/repositories/movie_list_repository_impl.dart';
+import '../../modules/home/domain/repositories/movie_list_repository.dart';
+import '../../modules/home/domain/usecases/get_movie_like_data_usecase.dart';
 
 class LikeButtonWidget extends StatefulWidget {
   const LikeButtonWidget({

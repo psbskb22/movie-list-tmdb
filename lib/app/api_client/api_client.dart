@@ -7,7 +7,6 @@ class APIClient {
   String token =
       "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MDM1ODFmMDAzNDRiZGFhYTJiZGEyNjJkMWQyMDY5MCIsIm5iZiI6MTczNTM2MTkyOC41MDcsInN1YiI6IjY3NmY4NTg4MmM5MDk3YjI2NjYxNzkxNyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.7JLPeya40UhXYVGk41bqFfEALmDjj6mMGR8ZdWGJOaQ";
   get(String endpoint) async {
-    print("movie_data api response start $baseUrl$endpoint&api_key=$apiKey");
     http.Response response = await http
         .get(Uri.parse("$baseUrl$endpoint?api_key=$apiKey"), headers: {
       "Authorization": "Bearer $token"
