@@ -1,12 +1,18 @@
 import 'package:http/http.dart' as http;
 import 'package:movie_list_tmdb/app/failure/exceptions.dart';
 
+import '../core/platform/network_info.dart';
+
 class APIClient {
   String baseUrl = "https://api.themoviedb.org";
   String apiKey = "503581f00344bdaaa2bda262d1d20690";
   String token =
       "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MDM1ODFmMDAzNDRiZGFhYTJiZGEyNjJkMWQyMDY5MCIsIm5iZiI6MTczNTM2MTkyOC41MDcsInN1YiI6IjY3NmY4NTg4MmM5MDk3YjI2NjYxNzkxNyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.7JLPeya40UhXYVGk41bqFfEALmDjj6mMGR8ZdWGJOaQ";
   get(String endpoint) async {
+    bool isConnected = await NetworkInfoImpl().checkConnectionStatus;
+    if (isConnected == false) {
+      throw NoInternetException();
+    }
     http.Response response = await http
         .get(Uri.parse("$baseUrl$endpoint?api_key=$apiKey"), headers: {
       "Authorization": "Bearer $token"

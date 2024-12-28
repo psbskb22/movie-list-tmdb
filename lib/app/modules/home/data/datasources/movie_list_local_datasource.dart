@@ -2,12 +2,15 @@ import 'package:movie_list_tmdb/app/local_storage/client/sql_client.dart';
 import 'package:movie_list_tmdb/app/local_storage/database/sql_database.dart';
 import 'package:movie_list_tmdb/app/modules/home/data/model/movies_response_data.dart';
 
+import '../../domain/entities/movie.dart';
+
 abstract class MovieListLocalDatasource {
   Future<MoviesResponseData> getMovieList(int pageNumber);
-  Future<bool> getMovieLikeData(String movieId);
+  Future<List<Movie>> getLikedMoviesList(String? movieId);
   Future<bool> cacheMovieList(
       int pageNumber, MoviesResponseData moviesResponseData);
-  Future<bool> cacheMoviveLikeData(String movieId, bool isLiked);
+  Future<bool> addMoviesToLikedMovieList(Movie movie);
+  Future<bool> deleteMoviesToLikedMovieList(String movieId);
 }
 
 class MovieListLocalDatasourceImpl implements MovieListLocalDatasource {
@@ -29,9 +32,12 @@ class MovieListLocalDatasourceImpl implements MovieListLocalDatasource {
   }
 
   @override
-  Future<bool> getMovieLikeData(String movieId) async {
+  Future<List<Movie>> getLikedMoviesList(String? movieId) async {
     List<Map<String, dynamic>> data = await likeSqlClient.read(id: movieId);
-    return data.first["isLiked"];
+    return data.map((element) {
+      Movie movie = Movie.fromJson(element);
+      return movie;
+    }).toList();
   }
 
   @override
@@ -42,8 +48,13 @@ class MovieListLocalDatasourceImpl implements MovieListLocalDatasource {
   }
 
   @override
-  Future<bool> cacheMoviveLikeData(String movieId, bool isLiked) async {
-    return await likeSqlClient
-        .write(id: movieId, data: {"id": movieId, "isLiked": isLiked});
+  Future<bool> addMoviesToLikedMovieList(Movie movie) async {
+    return await likeSqlClient.write(
+        id: movie.id.toString(), data: movie.toJson());
+  }
+
+  @override
+  Future<bool> deleteMoviesToLikedMovieList(String movieId) async {
+    return await likeSqlClient.delete(id: movieId);
   }
 }

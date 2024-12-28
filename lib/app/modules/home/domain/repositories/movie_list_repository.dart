@@ -5,6 +5,7 @@ import '../entities/movie.dart';
 
 abstract class MovieListRepository {
   Future<Either<Failure, List<Movie>>> getMovieList(int pageNumber);
-  Future<bool> getMovieLikeData(String movieId);
-  Future<bool> cacheMovieLikeData(String movieId, bool isLiked);
+  Future<List<Movie>> getLikedMoviesList(String? movieId);
+  Future<bool> addMoviesToLikedMovieList(Movie movie);
+  Future<bool> deleteMoviesToLikedMovieList(String movieId);
 }

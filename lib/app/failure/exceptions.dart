@@ -7,3 +7,5 @@ class ServerException implements Exception {}
 class EmptyCacheException implements Exception {}
 
 class CacheExpireException implements Exception {}
+
+class NoInternetException implements Exception {}

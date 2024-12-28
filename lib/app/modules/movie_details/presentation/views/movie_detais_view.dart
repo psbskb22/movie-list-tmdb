@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:movie_list_tmdb/app/core/data_injection/models/movie_singleton.dart';
 import 'package:movie_list_tmdb/app/core/state/data_state.dart';
+import 'package:movie_list_tmdb/app/core/widgets/movie_like_widget/like_button_widget.dart';
 import 'package:movie_list_tmdb/app/core/widgets/shimmer_loading.dart';
 import 'package:movie_list_tmdb/app/modules/home/domain/entities/movie.dart';
 
@@ -74,16 +75,36 @@ class MovieDetailsWidget extends StatelessWidget {
                       ),
                     ),
                     SafeArea(
-                      child: InkWell(
-                        onTap: () {
-                          context.pop();
-                        },
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          child: Icon(
-                            Icons.arrow_back_ios_new_rounded,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    context.pop();
+                                  },
+                                  child: Icon(
+                                    Icons.arrow_back_ios_new_rounded,
+                                    color:
+                                        Theme.of(context).colorScheme.onPrimary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Spacer(),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                LikeButtonWidget(
+                                  movie: movie,
+                                  iconSize: 30,
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                     ),

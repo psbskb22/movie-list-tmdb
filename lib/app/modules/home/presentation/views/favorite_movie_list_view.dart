@@ -6,13 +6,14 @@ import 'package:movie_list_tmdb/app/core/widgets/shimmer_loading.dart';
 import 'package:movie_list_tmdb/app/modules/home/domain/entities/movie.dart';
 import 'package:movie_list_tmdb/app/modules/home/presentation/cubits/movie_list_cubit.dart';
 
+import '../cubits/favorite_movie_list_cubit.dart';
 import '../widgets/movie_list_card.dart';
 import '../widgets/movie_list_error_widget.dart';
 
 TextEditingController searchTextEditingController = TextEditingController();
 
-class MovieListView extends StatelessWidget {
-  const MovieListView({super.key});
+class FavoriteMovieListView extends StatelessWidget {
+  const FavoriteMovieListView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +27,11 @@ class MovieListView extends StatelessWidget {
             controller: searchTextEditingController,
             onChanged: (value) {
               if (value.isEmpty) {
-                context.read<MovieListCubit>().getMovieList();
+                context.read<FavoriteMovieListCubit>().getFavoriteMovieList();
               }
-              context.read<MovieListCubit>().getMovieList(searchKeyword: value);
+              context
+                  .read<FavoriteMovieListCubit>()
+                  .getFavoriteMovieList(searchKeyword: value);
             },
             decoration: InputDecoration(
               hintText: 'Search for movies',
@@ -39,7 +42,7 @@ class MovieListView extends StatelessWidget {
             ),
           ),
         ),
-        Expanded(child: BlocBuilder<MovieListCubit, ApiState>(
+        Expanded(child: BlocBuilder<FavoriteMovieListCubit, ApiState>(
           builder: (context, state) {
             if (state is ApiDataState) {
               List<Movie> movieList = state.data;
@@ -115,17 +118,8 @@ class MovieListWidget extends StatefulWidget {
 }
 
 class _MovieListWidgetState extends State<MovieListWidget> {
-  ScrollController scrollController = ScrollController();
-
   @override
   void initState() {
-    scrollController.addListener(() {
-      if (scrollController.position.pixels ==
-          scrollController.position.maxScrollExtent) {
-        context.read<MovieListCubit>().getMovieList(pagination: true);
-        searchTextEditingController.clear();
-      }
-    });
     super.initState();
   }
 
@@ -134,7 +128,6 @@ class _MovieListWidgetState extends State<MovieListWidget> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: GridView.builder(
-          controller: scrollController,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             mainAxisSpacing: 8,
